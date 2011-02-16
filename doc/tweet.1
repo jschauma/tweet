@@ -1,0 +1,112 @@
+.Dd February 16, 2011
+.Dt TWEET 1
+.Os
+.Sh NAME
+.Nm tweet
+.Nd send a twitter update
+.Sh SYNOPSIS
+.Nm
+.Op Fl hSt
+.Op Fl r Ar id
+.Fl u Ar user
+.Sh DESCRIPTION
+.Nm
+is a very simple tool to send a twitter update to the given account -
+nothing else.
+The message to send is read from STDIN; the useraccount to update needs to
+be configured in the file ~/.tweetrc.
+.Sh OPTIONS
+The following options are supported by
+.Nm :
+.Bl -tag -width u_user_
+.It Fl S
+Do not shorten URLs.
+By default,
+.Nm
+will shorten URLs via is.gd.
+.It Fl h
+Print a short usage statement and exit.
+.It Fl r Ar id
+Retweet the tweet with the given
+.Ar id .
+Can be given multiple times to retweet multiple messages.
+.It Fl t
+Truncate messages that are too long.
+.It Fl u Ar user
+Update the given account.
+.El
+.Sh DETAILS
+.Nm
+requires you to specify the username of the twitter account to which to
+post the update.
+After that, it will read a single line of text from STDIN.
+Unless
+.Fl S
+is given,
+.Nm
+will take any URLs found in that message and shorten them using the is.gd
+URL shortening service.
+.Pp
+If the configuration file ~/.tweetrc contains information for exactly one
+username, then
+.Nm
+will update that user's status.
+If the file does not contain information for the user given on the
+command-line, then
+.Nm
+will attempt to retrieve the access information for that account and ask
+the user to update the configuration file.
+.Pp
+If the resulting message contains 140 or fewer characters,
+.Nm
+will post the message directly, otherwise, it will complain and exit
+(unless the
+.Fl t
+flag is given).
+.Pp
+If the
+.Fl r
+flag is given,
+.Nm
+will not read anything from STDIN and simply retweet the messages with the
+given ID(s).
+.Sh TWITTER AUTHORIZATION
+.Nm
+uses OAuth for authentication with Twitter.
+This means that in order to run the application, it needs a so-called
+"consumer key" and "consumer secret".
+These are retrieved by registering an application with Twitter.
+.Pp
+Now for hopefully obvious reasons it's undesirable for an application to
+be distributed with its own key and secret; unfortunately that means that
+anybody wishing to run this tool would have to get their own consumer
+secret and key.
+.Pp
+Hence, if you wish to run this tool, please go to
+http://dev.twitter.com/apps/new and register a new client.
+Then store the key and secret in the configuration file (see below).
+.Sh CONFIGURATION FILE
+.Nm
+looks for user access information in ~/.tweetrc.
+It will ignore all lines except for lines matching the patterns
+<user>_key=<key> and <user>_secret=<key>.
+Those values need to be the access credentials created via OAuth (which
+.Nm
+will generate for you and write to the file if not present for the given
+user).
+.Pp
+In addition to these,
+.Nm
+also needs its own api credentials.
+These are stored as (literally) "<api>_key" and "<api>_secret" (ie the
+username is "<api>", including the <>).
+.Sh EXIT STATUS
+.Ex -std
+.Sh HISTORY
+.Nm
+was originally written by
+.An Jan Schaumann
+.Aq jschauma@netmeister.org
+in January 2011.
+.Sh BUGS
+Please report bugs and feature requests to the author.

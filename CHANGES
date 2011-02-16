@@ -1,0 +1,9 @@
+Version 0.3 (2011-02-16)
+ * require user to be given via "-u"
+ * allow for retweeting of messages given via "-r id" (multiple possible)
+
+Version 0.2 (2011-02-15):
+ * support '-t' flag to truncate long messages if desired
+
+Version 0.1 (2011-01-10):
+ * Initial version

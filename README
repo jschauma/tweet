@@ -1,0 +1,12 @@
+Requirements:
+	- python (presumably > 2.5)
+	- py-simplejason (http://undefined.org/python/#simplejson)
+	- py-tweepy (http://code.google.com/p/tweepy/)
+
+Installation:
+	- install -c -m 755 src/tweet.py /somewhere/in/your/path/tweet
+	- install -c -m 444 doc/tweet.1 /somewhere/in/your/manpath/man1/tweet.1
+
+Questions/comments:
+	jschauma@netmeister.org
+	http://www.netmeister.org/apps/tweet/
