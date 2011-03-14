@@ -1,4 +1,4 @@
-.Dd February 16, 2011
+.Dd March 14, 2011
 .Dt TWEET 1
 .Os
 .Sh NAME
@@ -7,6 +7,8 @@
 .Sh SYNOPSIS
 .Nm
 .Op Fl hSt
+.Op Fl F Ar user
+.Op Fl f Ar user
 .Op Fl r Ar id
 .Fl u Ar user
 .Sh DESCRIPTION
@@ -19,6 +21,9 @@ be configured in the file ~/.tweetrc.
 The following options are supported by
 .Nm :
 .Bl -tag -width u_user_
+.It Fl F Ar user
+Unfollow the given user.
+Can be given multiple times to unfollow multiple users.
 .It Fl S
 Do not shorten URLs.
 By default,
@@ -26,6 +31,10 @@ By default,
 will shorten URLs via is.gd.
 .It Fl h
 Print a short usage statement and exit.
+.It Fl f Ar user
+Follow the given
+.Ar user .
+Can be given multiple times to follow multiple users.
 .It Fl r Ar id
 Retweet the tweet with the given
 .Ar id .

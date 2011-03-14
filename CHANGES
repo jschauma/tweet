@@ -1,3 +1,7 @@
+Version 0.4 (2011-03-13)
+ * add support for following and unfollowing users
+ * properly handle exceptions in the post-python-2.6 world
+
 Version 0.3 (2011-02-16)
  * require user to be given via "-u"
  * allow for retweeting of messages given via "-r id" (multiple possible)

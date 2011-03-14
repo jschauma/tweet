@@ -56,9 +56,11 @@ class Tweet(object):
 
         self.__opts = {
                     "cfg_file" : os.path.expanduser("~/.tweetrc"),
+                    "friends" : [],
+                    "foes" : [],
+                    "ids" : [],
                     "shorten" : True,
                     "truncate" : False,
-                    "ids" : [],
                     "user" : ""
                  }
         self.auth = None
@@ -79,6 +81,16 @@ class Tweet(object):
             self.msg += '\t-r id    retweet given message\n'
             self.msg += '\t-t       truncate messages\n'
             self.msg += '\t-u user  tweet as this user\n'
+
+
+    def follow(self, friends):
+        """Follow the given users."""
+
+        for f in friends:
+            try:
+                self.api.create_friendship(f)
+            except tweepy.error.TweepError, e:
+                sys.stderr.write("Error following %s: %s\n" % (f, e))
 
 
     def getAccessInfo(self, user):
@@ -190,15 +202,23 @@ class Tweet(object):
         """
 
         try:
-            opts, args = getopt.getopt(inargs, "Shr:tu:")
+            opts, args = getopt.getopt(inargs, "F:Shf:r:tu:")
         except getopt.GetoptError:
             raise self.Usage(self.EXIT_ERROR)
 
         for o, a in opts:
+            if o in ("-F"):
+                foes = self.getOpt("foes")
+                foes.append(a)
+                self.setOpt("foes", foes)
             if o in ("-S"):
                 self.setOpt("shorten", False)
             if o in ("-h"):
                 raise self.Usage(self.EXIT_SUCCESS)
+            if o in ("-f"):
+                friends = self.getOpt("friends")
+                friends.append(a)
+                self.setOpt("friends", friends)
             if o in ("-r"):
                 ids = self.getOpt("ids")
                 ids.append(a)
@@ -239,6 +259,16 @@ class Tweet(object):
         return msg
 
 
+    def retweet(self, ids):
+        """Re-Tweet the given message."""
+
+        for msg in ids:
+            try:
+                self.api.retweet(msg)
+            except tweepy.error.TweepError, e:
+                sys.stderr.write("Error retweeting %s: %s\n" % (msg, e))
+
+
     def setOpt(self, opt, val):
         """Set the given option to the provided value"""
 
@@ -273,19 +303,21 @@ class Tweet(object):
         self.api = tweepy.API(self.auth)
 
 
-
-    def retweet(self, ids):
-        """Re-Tweet the given message."""
-
-        for msg in ids:
-            self.api.retweet(msg)
-
-
     def tweet(self):
         """Read and then tweet the message"""
 
         msg = self.readInput()
         self.api.update_status(msg)
+
+
+    def unfollow(self, foes):
+        """Un-Follow the given users."""
+
+        for f in foes:
+            try:
+                self.api.destroy_friendship(f)
+            except tweepy.error.TweepError, e:
+                sys.stderr.write("Error un-following %s: %s\n" % (f, e))
 
 
     def verifyConfig(self):
@@ -312,6 +344,16 @@ if __name__ == "__main__":
 
             tweet.getAccessInfo(user)
             tweet.setupApi(user)
+
+            friends = tweet.getOpt("friends")
+            if friends:
+                tweet.follow(friends)
+                sys.exit(tweet.EXIT_SUCCESS)
+
+            foes = tweet.getOpt("foes")
+            if foes:
+                tweet.unfollow(foes)
+                sys.exit(tweet.EXIT_SUCCESS)
 
             ids = tweet.getOpt("ids")
             if ids:

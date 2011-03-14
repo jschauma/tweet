@@ -1,6 +1,11 @@
+tweet is a very simple command-line tweeter. That is, it allows you to
+send a twitter update to a given user account. It doesn't do anything
+else. Well, actually, it also shortens any links automatically in the
+message you submit, but that's all.  Hmm, no, wait, I guess it now also
+allows you to follow or unfollow accounts.  So there's that.
+
 Requirements:
 	- python (presumably > 2.5)
-	- py-simplejason (http://undefined.org/python/#simplejson)
 	- py-tweepy (http://code.google.com/p/tweepy/)
 
 Installation:
@@ -9,4 +14,4 @@ Installation:
 
 Questions/comments:
 	jschauma@netmeister.org
-	http://www.netmeister.org/apps/tweet/
+	http://www.netmeister.org/apps/twitter/tweet/
