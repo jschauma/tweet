@@ -1,4 +1,4 @@
-.Dd March 14, 2011
+.Dd March 15, 2011
 .Dt TWEET 1
 .Os
 .Sh NAME
@@ -8,6 +8,7 @@
 .Nm
 .Op Fl hSt
 .Op Fl F Ar user
+.Op Fl d Ar id
 .Op Fl f Ar user
 .Op Fl r Ar id
 .Fl u Ar user
@@ -29,6 +30,9 @@ Do not shorten URLs.
 By default,
 .Nm
 will shorten URLs via is.gd.
+.It Fl d Ar id
+Delete the given message.
+Can be given multiple times to retweet multiple messages.
 .It Fl h
 Print a short usage statement and exit.
 .It Fl f Ar user

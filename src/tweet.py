@@ -3,7 +3,8 @@
 # This little tool is a very simple command-line tweeter.  That is, it
 # allows you to send a twitter update to a given user account.  It doesn't
 # do anything else.  Well, actually, it also shortens any links
-# automatically in the message you submit, but that's all.
+# automatically in the message you submit, and does a few more things by
+# now.  Feeping creatures and all that.
 #
 # Copyright (c) 2011, Jan Schaumann. All rights reserved.
 #
@@ -56,9 +57,10 @@ class Tweet(object):
 
         self.__opts = {
                     "cfg_file" : os.path.expanduser("~/.tweetrc"),
+                    "dids" : [],
                     "friends" : [],
                     "foes" : [],
-                    "ids" : [],
+                    "rtids" : [],
                     "shorten" : True,
                     "truncate" : False,
                     "user" : ""
@@ -75,12 +77,27 @@ class Tweet(object):
 
         def __init__(self, rval):
             self.err = rval
-            self.msg = 'Usage: %s [-Sht] [-r id] -u user\n' % os.path.basename(sys.argv[0])
+            self.msg = 'Usage: %s [-Sht] [-F user] [-d id]' % os.path.basename(sys.argv[0])
+            self.msg += '  [-f user] [-r id] -u user\n'
+            self.msg += '\t-F user  unfollow this use\n'
             self.msg += '\t-S       do not shorten links\n'
+            self.msg += '\t-d id    delete given message\n'
+            self.msg += '\t-f user  follow this use\n'
             self.msg += '\t-h       print this message and exit\n'
             self.msg += '\t-r id    retweet given message\n'
             self.msg += '\t-t       truncate messages\n'
             self.msg += '\t-u user  tweet as this user\n'
+
+
+    def delete(self, ids):
+        """Delete the given message."""
+
+        for msg in ids:
+            try:
+                self.api.destroy_status(msg)
+            except tweepy.error.TweepError, e:
+                sys.stderr.write("Error deleting %s: %s\n" % (msg, e))
+
 
 
     def follow(self, friends):
@@ -202,7 +219,7 @@ class Tweet(object):
         """
 
         try:
-            opts, args = getopt.getopt(inargs, "F:Shf:r:tu:")
+            opts, args = getopt.getopt(inargs, "F:Sd:hf:r:tu:")
         except getopt.GetoptError:
             raise self.Usage(self.EXIT_ERROR)
 
@@ -213,6 +230,10 @@ class Tweet(object):
                 self.setOpt("foes", foes)
             if o in ("-S"):
                 self.setOpt("shorten", False)
+            if o in ("-d"):
+                dids = self.getOpt("dids")
+                dids.append(a)
+                self.setOpt("dids", dids)
             if o in ("-h"):
                 raise self.Usage(self.EXIT_SUCCESS)
             if o in ("-f"):
@@ -220,9 +241,9 @@ class Tweet(object):
                 friends.append(a)
                 self.setOpt("friends", friends)
             if o in ("-r"):
-                ids = self.getOpt("ids")
-                ids.append(a)
-                self.setOpt("ids", ids)
+                rtids = self.getOpt("rtids")
+                rtids.append(a)
+                self.setOpt("rtids", rtids)
             if o in ("-t"):
                 self.setOpt("truncate", True)
             if o in ("-u"):
@@ -307,7 +328,10 @@ class Tweet(object):
         """Read and then tweet the message"""
 
         msg = self.readInput()
-        self.api.update_status(msg)
+        try:
+            self.api.update_status(msg)
+        except tweepy.error.TweepError, e:
+            sys.stderr.write("Unable to tweet: %s\n" % e)
 
 
     def unfollow(self, foes):
@@ -345,6 +369,11 @@ if __name__ == "__main__":
             tweet.getAccessInfo(user)
             tweet.setupApi(user)
 
+            dids = tweet.getOpt("dids")
+            if dids:
+                tweet.delete(dids)
+                sys.exit(tweet.EXIT_SUCCESS)
+
             friends = tweet.getOpt("friends")
             if friends:
                 tweet.follow(friends)
@@ -355,11 +384,12 @@ if __name__ == "__main__":
                 tweet.unfollow(foes)
                 sys.exit(tweet.EXIT_SUCCESS)
 
-            ids = tweet.getOpt("ids")
-            if ids:
-                tweet.retweet(ids)
-            else:
-                tweet.tweet()
+            rtids = tweet.getOpt("rtids")
+            if rtids:
+                tweet.retweet(rtids)
+                sys.exit(tweet.EXIT_SUCCESS)
+
+            tweet.tweet()
         except tweet.Usage, u:
             if (u.err == tweet.EXIT_ERROR):
                 out = sys.stderr
