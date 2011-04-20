@@ -57,12 +57,14 @@ class Tweet(object):
 
         self.__opts = {
                     "cfg_file" : os.path.expanduser("~/.tweetrc"),
+                    "blockees" : [],
                     "dids" : [],
                     "friends" : [],
                     "foes" : [],
                     "rtids" : [],
                     "shorten" : True,
                     "truncate" : False,
+                    "unblockees" : [],
                     "user" : ""
                  }
         self.auth = None
@@ -70,6 +72,7 @@ class Tweet(object):
         self.api_credentials = {}
         self.users = {}
         self.msg = ""
+        self.we_tweet = True
 
 
     class Usage(Exception):
@@ -87,6 +90,16 @@ class Tweet(object):
             self.msg += '\t-r id    retweet given message\n'
             self.msg += '\t-t       truncate messages\n'
             self.msg += '\t-u user  tweet as this user\n'
+
+
+    def block(self, blockees):
+        """Block the given users."""
+
+        for b in blockees:
+            try:
+                self.api.create_block(b)
+            except tweepy.error.TweepError, e:
+                sys.stderr.write("Error blocking %s: %s\n" % (f, e))
 
 
     def delete(self, ids):
@@ -219,31 +232,45 @@ class Tweet(object):
         """
 
         try:
-            opts, args = getopt.getopt(inargs, "F:Sd:hf:r:tu:")
+            opts, args = getopt.getopt(inargs, "B:F:Sb:d:hf:r:tu:")
         except getopt.GetoptError:
             raise self.Usage(self.EXIT_ERROR)
 
         for o, a in opts:
+            if o in ("-B"):
+                unblockees = self.getOpt("unblockees")
+                unblockees.append(a)
+                self.setOpt("unblockees", unblockees)
+                self.we_tweet = False
             if o in ("-F"):
                 foes = self.getOpt("foes")
                 foes.append(a)
                 self.setOpt("foes", foes)
+                self.we_tweet = False
             if o in ("-S"):
                 self.setOpt("shorten", False)
+            if o in ("-b"):
+                blockees = self.getOpt("blockees")
+                blockees.append(a)
+                self.setOpt("blockees", blockees)
+                self.we_tweet = False
             if o in ("-d"):
                 dids = self.getOpt("dids")
                 dids.append(a)
                 self.setOpt("dids", dids)
+                self.we_tweet = False
             if o in ("-h"):
                 raise self.Usage(self.EXIT_SUCCESS)
             if o in ("-f"):
                 friends = self.getOpt("friends")
                 friends.append(a)
                 self.setOpt("friends", friends)
+                self.we_tweet = False
             if o in ("-r"):
                 rtids = self.getOpt("rtids")
                 rtids.append(a)
                 self.setOpt("rtids", rtids)
+                self.we_tweet = False
             if o in ("-t"):
                 self.setOpt("truncate", True)
             if o in ("-u"):
@@ -334,6 +361,16 @@ class Tweet(object):
             sys.stderr.write("Unable to tweet: %s\n" % e)
 
 
+    def unblock(self, unblockees):
+        """Unblock the given users."""
+
+        for b in unblockees:
+            try:
+                self.api.destroy_block(b)
+            except tweepy.error.TweepError, e:
+                sys.stderr.write("Error un-blocking %s: %s\n" % (f, e))
+
+
     def unfollow(self, foes):
         """Un-Follow the given users."""
 
@@ -369,27 +406,24 @@ if __name__ == "__main__":
             tweet.getAccessInfo(user)
             tweet.setupApi(user)
 
-            dids = tweet.getOpt("dids")
-            if dids:
-                tweet.delete(dids)
+            if tweet.we_tweet:
+                tweet.tweet()
                 sys.exit(tweet.EXIT_SUCCESS)
 
-            friends = tweet.getOpt("friends")
-            if friends:
-                tweet.follow(friends)
-                sys.exit(tweet.EXIT_SUCCESS)
+            # Many of the things we can do involve getting a list and
+            # passing it to a function.  Let's map these, so we can more
+            # easily iterate over them:
+            actions = [ ("blockees", tweet.block),
+                            ("unblockees", tweet.unblock),
+                            ("dids", tweet.delete),
+                            ("friends", tweet.follow),
+                            ("foes", tweet.unfollow),
+                            ("rtids", tweet.retweet) ]
 
-            foes = tweet.getOpt("foes")
-            if foes:
-                tweet.unfollow(foes)
-                sys.exit(tweet.EXIT_SUCCESS)
+            for (thing, func) in actions:
+                things = tweet.getOpt(thing)
+                func(things)
 
-            rtids = tweet.getOpt("rtids")
-            if rtids:
-                tweet.retweet(rtids)
-                sys.exit(tweet.EXIT_SUCCESS)
-
-            tweet.tweet()
         except tweet.Usage, u:
             if (u.err == tweet.EXIT_ERROR):
                 out = sys.stderr
