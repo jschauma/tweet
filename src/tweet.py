@@ -58,6 +58,7 @@ class Tweet(object):
         self.__opts = {
                     "cfg_file" : os.path.expanduser("~/.tweetrc"),
                     "blockees" : [],
+                    "aid" : None,
                     "dids" : [],
                     "friends" : [],
                     "foes" : [],
@@ -80,10 +81,13 @@ class Tweet(object):
 
         def __init__(self, rval):
             self.err = rval
-            self.msg = 'Usage: %s [-Sht] [-F user] [-d id]' % os.path.basename(sys.argv[0])
-            self.msg += '  [-f user] [-r id] -u user\n'
+            self.msg = 'Usage: %s [-Sht] [-[BF] user] [-[adr] id]\n' % os.path.basename(sys.argv[0])
+            self.msg += '  [-[bf] user] -u user\n'
+            self.msg += '\t-B user  unblock this use\n'
             self.msg += '\t-F user  unfollow this use\n'
             self.msg += '\t-S       do not shorten links\n'
+            self.msg += '\t-a id    answer given message\n'
+            self.msg += '\t-b user  block this use\n'
             self.msg += '\t-d id    delete given message\n'
             self.msg += '\t-f user  follow this use\n'
             self.msg += '\t-h       print this message and exit\n'
@@ -232,7 +236,7 @@ class Tweet(object):
         """
 
         try:
-            opts, args = getopt.getopt(inargs, "B:F:Sb:d:hf:r:tu:")
+            opts, args = getopt.getopt(inargs, "B:F:Sa:b:d:hf:r:tu:")
         except getopt.GetoptError:
             raise self.Usage(self.EXIT_ERROR)
 
@@ -249,6 +253,8 @@ class Tweet(object):
                 self.we_tweet = False
             if o in ("-S"):
                 self.setOpt("shorten", False)
+            if o in ("-a"):
+                self.setOpt("aid", a)
             if o in ("-b"):
                 blockees = self.getOpt("blockees")
                 blockees.append(a)
@@ -356,7 +362,7 @@ class Tweet(object):
 
         msg = self.readInput()
         try:
-            self.api.update_status(msg)
+            self.api.update_status(msg, self.getOpt("aid"))
         except tweepy.error.TweepError, e:
             sys.stderr.write("Unable to tweet: %s\n" % e)
 

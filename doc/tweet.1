@@ -1,4 +1,4 @@
-.Dd April 20, 2011
+.Dd Septemver 06, 2011
 .Dt TWEET 1
 .Os
 .Sh NAME
@@ -9,6 +9,7 @@
 .Op Fl hSt
 .Op Fl B Ar user
 .Op Fl F Ar user
+.Op Fl a Ar id
 .Op Fl b Ar user
 .Op Fl d Ar id
 .Op Fl f Ar user
@@ -37,6 +38,10 @@ Do not shorten URLs.
 By default,
 .Nm
 will shorten URLs via is.gd.
+.It Fl a Ar id
+Answer (ie reply) to the given
+.Ar id .
+That is, let the API sort the new message as a reply to this message.
 .It Fl b Ar user
 Block the given
 .Ar user .
