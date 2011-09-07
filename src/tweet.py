@@ -83,13 +83,13 @@ class Tweet(object):
             self.err = rval
             self.msg = 'Usage: %s [-Sht] [-[BF] user] [-[adr] id]\n' % os.path.basename(sys.argv[0])
             self.msg += '  [-[bf] user] -u user\n'
-            self.msg += '\t-B user  unblock this use\n'
-            self.msg += '\t-F user  unfollow this use\n'
+            self.msg += '\t-B user  unblock this user\n'
+            self.msg += '\t-F user  unfollow this user\n'
             self.msg += '\t-S       do not shorten links\n'
             self.msg += '\t-a id    answer given message\n'
-            self.msg += '\t-b user  block this use\n'
+            self.msg += '\t-b user  block this user\n'
             self.msg += '\t-d id    delete given message\n'
-            self.msg += '\t-f user  follow this use\n'
+            self.msg += '\t-f user  follow this user\n'
             self.msg += '\t-h       print this message and exit\n'
             self.msg += '\t-r id    retweet given message\n'
             self.msg += '\t-t       truncate messages\n'
