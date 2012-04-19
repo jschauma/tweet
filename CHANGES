@@ -1,6 +1,8 @@
-Version
+Version 0.8 (2012-04-18)
  * let's spell September correctly
  * spelling fixes in help (reported by @bcharder)
+ * don't bother shortening links -- Twitter will just t.co wrap those further,
+   possibly creating longer links
 
 Version 0.7 (2011-09-06)
  * mention '-B' and '-b' in usage

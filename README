@@ -1,11 +1,9 @@
 tweet is a very simple command-line tweeter. That is, it allows you to
 send a twitter update to a given user account. It doesn't do anything
-else. Well, actually, it also shortens any links automatically in the
-message you submit, but that's all.  Hmm, no, wait, I guess it now also
-allows you to follow or unfollow accounts as well as block and unblock
-users.  So there's that.  Also, this tool suffers from feeping creatures
-and will (or already has) probably spawn additional features making it not
-all that very simple anymore.
+else. Well, actually, it also allows you to follow or unfollow accounts as
+well as block and unblock users.  So there's that.  Also, this tool
+suffers from feeping creatures and will (or already has) probably
+spawn(ed) additional features making it not all that very simple anymore.
 
 Requirements:
 	- python (presumably > 2.5)

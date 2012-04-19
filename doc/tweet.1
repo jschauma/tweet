@@ -1,4 +1,4 @@
-.Dd September 06, 2011
+.Dd April 18, 2012
 .Dt TWEET 1
 .Os
 .Sh NAME
@@ -6,7 +6,7 @@
 .Nd send a twitter update
 .Sh SYNOPSIS
 .Nm
-.Op Fl hSt
+.Op Fl ht
 .Op Fl B Ar user
 .Op Fl F Ar user
 .Op Fl a Ar id
@@ -33,11 +33,6 @@ Can be given multiple times to unblock multiple users.
 Unfollow the given
 .Ar user .
 Can be given multiple times to unfollow multiple users.
-.It Fl S
-Do not shorten URLs.
-By default,
-.Nm
-will shorten URLs via is.gd.
 .It Fl a Ar id
 Answer (ie reply) to the given
 .Ar id .
@@ -69,12 +64,6 @@ Update the given account.
 requires you to specify the username of the twitter account to which to
 post the update.
 After that, it will read a single line of text from STDIN.
-Unless
-.Fl S
-is given,
-.Nm
-will take any URLs found in that message and shorten them using the is.gd
-URL shortening service.
 .Pp
 If the configuration file ~/.tweetrc contains information for exactly one
 username, then

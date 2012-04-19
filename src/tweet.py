@@ -2,9 +2,7 @@
 #
 # This little tool is a very simple command-line tweeter.  That is, it
 # allows you to send a twitter update to a given user account.  It doesn't
-# do anything else.  Well, actually, it also shortens any links
-# automatically in the message you submit, and does a few more things by
-# now.  Feeping creatures and all that.
+# do anything else.
 #
 # Copyright (c) 2011, Jan Schaumann. All rights reserved.
 #
@@ -36,7 +34,6 @@ import os
 import re
 import sys
 import tweepy
-import urllib
 
 ###
 ### Classes
@@ -50,7 +47,11 @@ class Tweet(object):
 
     MAXCHARS = 140
 
-    URL_SHORTENER = "http://is.gd/api.php?longurl="
+    # https://dev.twitter.com/docs/tco-link-wrapper/faq
+    # Technically, we should query and retrieve the max length for t.co
+    # links, but I'm gonna go ahead and just use the current (as of
+    # 2012-04-18) value.
+    SHORT_LENGTH = 21
 
     def __init__(self):
         """Construct a Tweet object with default values."""
@@ -63,7 +64,6 @@ class Tweet(object):
                     "friends" : [],
                     "foes" : [],
                     "rtids" : [],
-                    "shorten" : True,
                     "truncate" : False,
                     "unblockees" : [],
                     "user" : ""
@@ -81,11 +81,10 @@ class Tweet(object):
 
         def __init__(self, rval):
             self.err = rval
-            self.msg = 'Usage: %s [-Sht] [-[BF] user] [-[adr] id]\n' % os.path.basename(sys.argv[0])
+            self.msg = 'Usage: %s [-ht] [-[BF] user] [-[adr] id]\n' % os.path.basename(sys.argv[0])
             self.msg += '  [-[bf] user] -u user\n'
             self.msg += '\t-B user  unblock this user\n'
             self.msg += '\t-F user  unfollow this user\n'
-            self.msg += '\t-S       do not shorten links\n'
             self.msg += '\t-a id    answer given message\n'
             self.msg += '\t-b user  block this user\n'
             self.msg += '\t-d id    delete given message\n'
@@ -157,6 +156,26 @@ class Tweet(object):
             sys.stderr.write("Unable to write to config file '%s': %s\n" % \
                 (cfile, e.strerror))
             raise
+
+
+    def getLen(self, msg):
+        """Return the length of the message, accounting for t.co link
+        wrapping by Twitter."""
+
+        pattern = re.compile('^(ftp|https?)://.+$')
+
+        words = []
+        length = 0
+
+        for word in msg.split():
+            if pattern.match(word):
+                length += self.SHORT_LENGTH
+            else:
+                length += len(word)
+            # whitespace
+            length += 1
+
+        return length
 
 
     def getOpt(self, opt):
@@ -236,7 +255,7 @@ class Tweet(object):
         """
 
         try:
-            opts, args = getopt.getopt(inargs, "B:F:Sa:b:d:hf:r:tu:")
+            opts, args = getopt.getopt(inargs, "B:F:a:b:d:hf:r:tu:")
         except getopt.GetoptError:
             raise self.Usage(self.EXIT_ERROR)
 
@@ -251,8 +270,6 @@ class Tweet(object):
                 foes.append(a)
                 self.setOpt("foes", foes)
                 self.we_tweet = False
-            if o in ("-S"):
-                self.setOpt("shorten", False)
             if o in ("-a"):
                 self.setOpt("aid", a)
             if o in ("-b"):
@@ -287,7 +304,7 @@ class Tweet(object):
 
 
     def readInput(self):
-        """Read the input from stdin; if appropriate, shorten URLs.
+        """Read the input from stdin.
 
         Arguments: none
 
@@ -299,9 +316,7 @@ class Tweet(object):
         """
 
         msg = sys.stdin.readline().strip()
-        if self.getOpt("shorten"):
-            msg = self.shorten(msg)
-        l=len(msg)
+        l=self.getLen(msg)
         if l > self.MAXCHARS:
             if self.getOpt("truncate"):
                 msg = ' '.join(msg[:136].split(' ')[0:-1]) + '...'
@@ -327,24 +342,6 @@ class Tweet(object):
         """Set the given option to the provided value"""
 
         self.__opts[opt] = val
-
-
-    def shorten(self, msg):
-        """Shorten any URLs found in the given string using is.gd"""
-
-        pattern = re.compile('^(ftp|https?)://.+$')
-
-        words = []
-
-        for word in msg.split():
-            if pattern.match(word):
-                quoted = urllib.quote(word)
-                short = urllib.urlopen(self.URL_SHORTENER + quoted).read()
-                words.append(short)
-            else:
-                words.append(word)
-
-        return " ".join(words)
 
 
     def setupApi(self, user):
