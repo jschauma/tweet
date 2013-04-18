@@ -388,7 +388,8 @@ class Tweet(object):
         """Verify that we have api credentials."""
 
         if (not (self.api_credentials.has_key("key") and self.api_credentials.has_key("secret"))):
-            sys.stderr.write("No API credentials found.  Please do the 'register-this-app' dance.\n")
+            sys.stderr.write("No API credentials found.  Please do the 'register-this-app' dance; ")
+            sys.stderr.write("man tweet(1) for more information.\n")
             sys.exit(self.EXIT_ERROR)
 
 
