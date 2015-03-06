@@ -1,3 +1,6 @@
+Version 0.9 (2015-03-05)
+ * add '-i' to print the ID of a new tweet
+
 Version 0.8 (2012-04-18)
  * let's spell September correctly
  * spelling fixes in help (reported by @bcharder)

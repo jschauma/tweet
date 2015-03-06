@@ -57,16 +57,17 @@ class Tweet(object):
         """Construct a Tweet object with default values."""
 
         self.__opts = {
-                    "cfg_file" : os.path.expanduser("~/.tweetrc"),
-                    "blockees" : [],
-                    "aid" : None,
-                    "dids" : [],
-                    "friends" : [],
-                    "foes" : [],
-                    "rtids" : [],
-                    "truncate" : False,
+                    "cfg_file"   : os.path.expanduser("~/.tweetrc"),
+                    "blockees"   : [],
+                    "aid"        : None,
+                    "dids"       : [],
+                    "friends"    : [],
+                    "foes"       : [],
+		    "pids"       : False,
+                    "rtids"      : [],
+                    "truncate"   : False,
                     "unblockees" : [],
-                    "user" : ""
+                    "user"       : ""
                  }
         self.auth = None
         self.api = None
@@ -255,7 +256,7 @@ class Tweet(object):
         """
 
         try:
-            opts, args = getopt.getopt(inargs, "B:F:a:b:d:hf:r:tu:")
+            opts, args = getopt.getopt(inargs, "B:F:a:b:d:hif:r:tu:")
         except getopt.GetoptError:
             raise self.Usage(self.EXIT_ERROR)
 
@@ -289,6 +290,8 @@ class Tweet(object):
                 friends.append(a)
                 self.setOpt("friends", friends)
                 self.we_tweet = False
+	    if o in ("-i"):
+                self.setOpt("pids", True)
             if o in ("-r"):
                 rtids = self.getOpt("rtids")
                 rtids.append(a)
@@ -359,7 +362,9 @@ class Tweet(object):
 
         msg = self.readInput()
         try:
-            self.api.update_status(msg, self.getOpt("aid"))
+            status = self.api.update_status(msg, self.getOpt("aid"))
+	    if self.getOpt("pids"):
+		print status.id
         except tweepy.error.TweepError, e:
             sys.stderr.write("Unable to tweet: %s\n" % e)
 
