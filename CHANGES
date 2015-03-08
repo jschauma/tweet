@@ -1,3 +1,6 @@
+Version 1.0 (2015-03-08)
+ * add '-c' to specify an alternate configuration file
+
 Version 0.9 (2015-03-05)
  * add '-i' to print the ID of a new tweet
 

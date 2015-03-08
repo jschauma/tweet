@@ -1,4 +1,4 @@
-.Dd March 05, 2015
+.Dd March 08, 2015
 .Dt TWEET 1
 .Os
 .Sh NAME
@@ -11,6 +11,7 @@
 .Op Fl F Ar user
 .Op Fl a Ar id
 .Op Fl b Ar user
+.Op Fl c Ar file
 .Op Fl d Ar id
 .Op Fl f Ar user
 .Op Fl r Ar id
@@ -41,6 +42,8 @@ That is, let the API sort the new message as a reply to this message.
 Block the given
 .Ar user .
 Can be given multiple times to block multiple users.
+.It Fl c Ar file
+Read the configuration from the given file.
 .It Fl d Ar id
 Delete the given message.
 Can be given multiple times to retweet multiple messages.

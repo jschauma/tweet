@@ -256,7 +256,7 @@ class Tweet(object):
         """
 
         try:
-            opts, args = getopt.getopt(inargs, "B:F:a:b:d:hif:r:tu:")
+            opts, args = getopt.getopt(inargs, "B:F:a:b:c:d:hif:r:tu:")
         except getopt.GetoptError:
             raise self.Usage(self.EXIT_ERROR)
 
@@ -278,6 +278,8 @@ class Tweet(object):
                 blockees.append(a)
                 self.setOpt("blockees", blockees)
                 self.we_tweet = False
+            if o in ("-c"):
+                self.setOpt("cfg_file", a)
             if o in ("-d"):
                 dids = self.getOpt("dids")
                 dids.append(a)
