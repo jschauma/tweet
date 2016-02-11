@@ -63,7 +63,8 @@ class Tweet(object):
                     "dids"       : [],
                     "friends"    : [],
                     "foes"       : [],
-		    "pids"       : False,
+                    "likes"      : [],
+                    "pids"       : False,
                     "rtids"      : [],
                     "truncate"   : False,
                     "unblockees" : [],
@@ -82,7 +83,7 @@ class Tweet(object):
 
         def __init__(self, rval):
             self.err = rval
-            self.msg = 'Usage: %s [-ht] [-[BF] user] [-[adr] id]\n' % os.path.basename(sys.argv[0])
+            self.msg = 'Usage: %s [-ht] [-[BF] user] [-[adlr] id]\n' % os.path.basename(sys.argv[0])
             self.msg += '  [-[bf] user] -u user\n'
             self.msg += '\t-B user  unblock this user\n'
             self.msg += '\t-F user  unfollow this user\n'
@@ -91,6 +92,7 @@ class Tweet(object):
             self.msg += '\t-d id    delete given message\n'
             self.msg += '\t-f user  follow this user\n'
             self.msg += '\t-h       print this message and exit\n'
+            self.msg += '\t-l id    like given message\n'
             self.msg += '\t-r id    retweet given message\n'
             self.msg += '\t-t       truncate messages\n'
             self.msg += '\t-u user  tweet as this user\n'
@@ -127,6 +129,16 @@ class Tweet(object):
                 sys.stderr.write("Error following %s: %s\n" % (f, e))
 
 
+    def favorite(self, ids):
+        """Favorite^WLike the given tweets."""
+
+        for msg in ids:
+            try:
+                self.api.create_favorite(msg)
+            except tweepy.error.TweepError, e:
+                sys.stderr.write("Error faving %s: %s\n" % (msg, e))
+
+
     def getAccessInfo(self, user):
         """Initialize OAuth Access Info (if not found in the configuration file)."""
 
@@ -143,15 +155,15 @@ class Tweet(object):
         self.auth.get_access_token(verifier)
 
         self.users[user] = {
-            "key" : self.auth.access_token.key,
-            "secret" : self.auth.access_token.secret
+            "key" : self.auth.access_token,
+            "secret" : self.auth.access_token_secret
         }
 
         cfile = self.getOpt("cfg_file")
         try:
             f = file(cfile, "a")
-            f.write("%s_key = %s\n" % (user, self.auth.access_token.key))
-            f.write("%s_secret = %s\n" % (user, self.auth.access_token.secret))
+            f.write("%s_key = %s\n" % (user, self.auth.access_token))
+            f.write("%s_secret = %s\n" % (user, self.auth.access_token_secret))
             f.close()
         except IOError, e:
             sys.stderr.write("Unable to write to config file '%s': %s\n" % \
@@ -256,7 +268,7 @@ class Tweet(object):
         """
 
         try:
-            opts, args = getopt.getopt(inargs, "B:F:a:b:c:d:hif:r:tu:")
+            opts, args = getopt.getopt(inargs, "B:F:a:b:c:d:f:hil:r:tu:")
         except getopt.GetoptError:
             raise self.Usage(self.EXIT_ERROR)
 
@@ -292,8 +304,13 @@ class Tweet(object):
                 friends.append(a)
                 self.setOpt("friends", friends)
                 self.we_tweet = False
-	    if o in ("-i"):
+            if o in ("-i"):
                 self.setOpt("pids", True)
+            if o in ("-l"):
+                likes= self.getOpt("likes")
+                likes.append(a)
+                self.setOpt("likes", likes)
+                self.we_tweet = False
             if o in ("-r"):
                 rtids = self.getOpt("rtids")
                 rtids.append(a)
@@ -428,6 +445,7 @@ if __name__ == "__main__":
                             ("dids", tweet.delete),
                             ("friends", tweet.follow),
                             ("foes", tweet.unfollow),
+                            ("likes", tweet.favorite),
                             ("rtids", tweet.retweet) ]
 
             for (thing, func) in actions:

@@ -1,3 +1,6 @@
+Version 1.1 (2016-02-11)
+ * add '-l' to fave^Wlike a given tweet
+
 Version 1.0 (2015-03-08)
  * add '-c' to specify an alternate configuration file
 
