@@ -64,6 +64,7 @@ class Tweet(object):
                     "friends"    : [],
                     "foes"       : [],
                     "likes"      : [],
+                    "media"      : None,
                     "pids"       : False,
                     "rtids"      : [],
                     "truncate"   : False,
@@ -268,7 +269,7 @@ class Tweet(object):
         """
 
         try:
-            opts, args = getopt.getopt(inargs, "B:F:a:b:c:d:f:hil:r:tu:")
+            opts, args = getopt.getopt(inargs, "B:F:a:b:c:d:f:hil:m:r:tu:")
         except getopt.GetoptError:
             raise self.Usage(self.EXIT_ERROR)
 
@@ -307,10 +308,12 @@ class Tweet(object):
             if o in ("-i"):
                 self.setOpt("pids", True)
             if o in ("-l"):
-                likes= self.getOpt("likes")
+                likes = self.getOpt("likes")
                 likes.append(a)
                 self.setOpt("likes", likes)
                 self.we_tweet = False
+            if o in ("-m"):
+                self.setOpt("media", a)
             if o in ("-r"):
                 rtids = self.getOpt("rtids")
                 rtids.append(a)
@@ -379,11 +382,28 @@ class Tweet(object):
     def tweet(self):
         """Read and then tweet the message"""
 
+        status = None
+        media = self.getOpt("media")
+
         msg = self.readInput()
+
         try:
-            status = self.api.update_status(msg, self.getOpt("aid"))
-	    if self.getOpt("pids"):
-		print status.id
+
+            if media:
+                if not os.access(media, os.F_OK):
+                    sys.stderr.write("No such file: %s\n" % media)
+                    return
+                if not os.access(media, os.R_OK):
+                    sys.stderr.write("Unable to read: %s\n" % media)
+                    return
+
+                status = self.api.update_with_media(media, status=msg, in_reply_to_status_id=self.getOpt("aid"))
+            else:
+                status = self.api.update_status(msg, self.getOpt("aid"))
+
+            if self.getOpt("pids"):
+                print status.id
+
         except tweepy.error.TweepError, e:
             sys.stderr.write("Unable to tweet: %s\n" % e)
 

@@ -1,4 +1,4 @@
-.Dd February 11, 2016
+.Dd July 6, 2016
 .Dt TWEET 1
 .Os
 .Sh NAME
@@ -15,6 +15,7 @@
 .Op Fl d Ar id
 .Op Fl f Ar user
 .Op Fl l Ar id
+.Op Fl m Ar media
 .Op Fl r Ar id
 .Fl u Ar user
 .Sh DESCRIPTION
@@ -26,7 +27,7 @@ be configured in the file ~/.tweetrc.
 .Sh OPTIONS
 The following options are supported by
 .Nm :
-.Bl -tag -width u_user_
+.Bl -tag -width m_media_
 .It Fl B Ar user
 Unblock the given
 .Ar user .
@@ -59,6 +60,8 @@ Can be given multiple times to follow multiple users.
 .It Fl l Ar id
 Like the given tweet.
 Can be given multiple times to like multiple tweets.
+.It Fl m Ar media
+Upload the given media (picture or video).
 .It Fl r Ar id
 Retweet the tweet with the given
 .Ar id .
