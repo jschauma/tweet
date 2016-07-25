@@ -107,6 +107,9 @@ class Tweet(object):
                 self.api.create_block(b)
             except tweepy.error.TweepError, e:
                 sys.stderr.write("Error blocking %s: %s\n" % (f, e))
+                return 1
+
+        return 0
 
 
     def delete(self, ids):
@@ -117,8 +120,9 @@ class Tweet(object):
                 self.api.destroy_status(msg)
             except tweepy.error.TweepError, e:
                 sys.stderr.write("Error deleting %s: %s\n" % (msg, e))
+                return 1
 
-
+        return 0
 
     def follow(self, friends):
         """Follow the given users."""
@@ -128,6 +132,9 @@ class Tweet(object):
                 self.api.create_friendship(f)
             except tweepy.error.TweepError, e:
                 sys.stderr.write("Error following %s: %s\n" % (f, e))
+                return 1
+
+        return 0
 
 
     def favorite(self, ids):
@@ -138,6 +145,9 @@ class Tweet(object):
                 self.api.create_favorite(msg)
             except tweepy.error.TweepError, e:
                 sys.stderr.write("Error faving %s: %s\n" % (msg, e))
+                return 1
+
+        return 0
 
 
     def getAccessInfo(self, user):
@@ -361,6 +371,9 @@ class Tweet(object):
                 self.api.retweet(msg)
             except tweepy.error.TweepError, e:
                 sys.stderr.write("Error retweeting %s: %s\n" % (msg, e))
+                return 1
+
+        return 0
 
 
     def setOpt(self, opt, val):
@@ -392,10 +405,10 @@ class Tweet(object):
             if media:
                 if not os.access(media, os.F_OK):
                     sys.stderr.write("No such file: %s\n" % media)
-                    return
+                    return 1
                 if not os.access(media, os.R_OK):
                     sys.stderr.write("Unable to read: %s\n" % media)
-                    return
+                    return 1
 
                 status = self.api.update_with_media(media, status=msg, in_reply_to_status_id=self.getOpt("aid"))
             else:
@@ -406,6 +419,9 @@ class Tweet(object):
 
         except tweepy.error.TweepError, e:
             sys.stderr.write("Unable to tweet: %s\n" % e)
+            return 1
+
+        return 0
 
 
     def unblock(self, unblockees):
@@ -416,6 +432,9 @@ class Tweet(object):
                 self.api.destroy_block(b)
             except tweepy.error.TweepError, e:
                 sys.stderr.write("Error un-blocking %s: %s\n" % (f, e))
+                return 1
+
+        return 0
 
 
     def unfollow(self, foes):
@@ -426,6 +445,9 @@ class Tweet(object):
                 self.api.destroy_friendship(f)
             except tweepy.error.TweepError, e:
                 sys.stderr.write("Error un-following %s: %s\n" % (f, e))
+                return 1
+
+        return 0
 
 
     def verifyConfig(self):
@@ -445,6 +467,7 @@ if __name__ == "__main__":
     try:
         tweet = Tweet()
         try:
+            rval = 0
             tweet.parseOptions(sys.argv[1:])
             tweet.parseConfig(tweet.getOpt("cfg_file"))
             tweet.verifyConfig()
@@ -455,8 +478,7 @@ if __name__ == "__main__":
             tweet.setupApi(user)
 
             if tweet.we_tweet:
-                tweet.tweet()
-                sys.exit(tweet.EXIT_SUCCESS)
+                sys.exit(tweet.tweet())
 
             # Many of the things we can do involve getting a list and
             # passing it to a function.  Let's map these, so we can more
@@ -471,7 +493,9 @@ if __name__ == "__main__":
 
             for (thing, func) in actions:
                 things = tweet.getOpt(thing)
-                func(things)
+                rval += func(things)
+
+            sys.exit(rval)
 
         except tweet.Usage, u:
             if (u.err == tweet.EXIT_ERROR):
@@ -480,7 +504,7 @@ if __name__ == "__main__":
                 out = sys.stdout
             out.write(u.msg)
             sys.exit(u.err)
-	        # NOTREACHED
+            # NOTREACHED
 
     except KeyboardInterrupt:
         # catch ^C, so we don't get a "confusing" python trace
