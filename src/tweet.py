@@ -351,7 +351,13 @@ class Tweet(object):
             if given input is > MAXCHARS characters
         """
 
-        msg = sys.stdin.readline().strip()
+        lines = sys.stdin.readlines()
+        if len(lines) < 2:
+            msg = lines[0].strip()
+        else:
+            lines[len(lines)-1] = lines[len(lines)-1].strip()
+            msg = "".join(lines)
+
         l=self.getLen(msg)
         if l > self.MAXCHARS:
             if self.getOpt("truncate"):
