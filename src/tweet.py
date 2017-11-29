@@ -45,7 +45,7 @@ class Tweet(object):
     EXIT_ERROR = 1
     EXIT_SUCCESS = 0
 
-    MAXCHARS = 140
+    MAXCHARS = 280
 
     # https://dev.twitter.com/docs/tco-link-wrapper/faq
     # Technically, we should query and retrieve the max length for t.co
@@ -84,7 +84,7 @@ class Tweet(object):
 
         def __init__(self, rval):
             self.err = rval
-            self.msg = 'Usage: %s [-ht] [-[BF] user] [-[adlr] id]\n' % os.path.basename(sys.argv[0])
+            self.msg = 'Usage: %s [-hit] [-[BF] user] [-[adlr] id]\n' % os.path.basename(sys.argv[0])
             self.msg += '  [-[bf] user] -u user\n'
             self.msg += '\t-B user  unblock this user\n'
             self.msg += '\t-F user  unfollow this user\n'
@@ -93,6 +93,7 @@ class Tweet(object):
             self.msg += '\t-d id    delete given message\n'
             self.msg += '\t-f user  follow this user\n'
             self.msg += '\t-h       print this message and exit\n'
+            self.msg += '\t-i       print the tweet ID of any new tweets\n'
             self.msg += '\t-l id    like given message\n'
             self.msg += '\t-r id    retweet given message\n'
             self.msg += '\t-t       truncate messages\n'
@@ -347,14 +348,15 @@ class Tweet(object):
             the given input, possibly modified
 
         Aborts:
-            if given input is > 140 characters
+            if given input is > MAXCHARS characters
         """
 
         msg = sys.stdin.readline().strip()
         l=self.getLen(msg)
         if l > self.MAXCHARS:
             if self.getOpt("truncate"):
-                msg = ' '.join(msg[:136].split(' ')[0:-1]) + '...'
+                truncLen = self.MAXCHARS - 4
+                msg = ' '.join(msg[:truncLen].split(' ')[0:-1]) + '...'
             else:
                 sys.stderr.write("Message too long (%d). Trim by %d.\n" \
                     % (l, (l - self.MAXCHARS)))
