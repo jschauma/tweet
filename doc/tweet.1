@@ -1,4 +1,4 @@
-.Dd July 6, 2016
+.Dd November 17, 2020
 .Dt TWEET 1
 .Os
 .Sh NAME
@@ -22,7 +22,7 @@
 .Nm
 is a very simple tool to send a twitter update to the given account -
 nothing else.
-The message to send is read from STDIN; the useraccount to update needs to
+The message to send is read from STDIN; the user account to update needs to
 be configured in the file ~/.tweetrc.
 .Sh OPTIONS
 The following options are supported by
@@ -75,7 +75,7 @@ Update the given account.
 .Nm
 requires you to specify the username of the twitter account to which to
 post the update.
-After that, it will read a single line of text from STDIN.
+After that, it will read input from STDIN.
 .Pp
 If the configuration file ~/.tweetrc contains information for exactly one
 username, then
@@ -87,7 +87,7 @@ command-line, then
 will attempt to retrieve the access information for that account and ask
 the user to update the configuration file.
 .Pp
-If the resulting message contains 140 or fewer characters,
+If the resulting message contains 280 or fewer characters,
 .Nm
 will post the message directly, otherwise, it will complain and exit
 (unless the
@@ -113,7 +113,7 @@ anybody wishing to run this tool would have to get their own consumer
 secret and key.
 .Pp
 Hence, if you wish to run this tool, please go to
-http://dev.twitter.com/apps/new and register a new client.
+https://developer.twitter.com/ and register a new client.
 Then store the key and secret in the configuration file (see below).
 .Sh CONFIGURATION FILE
 .Nm

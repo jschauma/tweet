@@ -29,7 +29,7 @@ SYNOPSIS
 
 DESCRIPTION
      tweet is a very simple tool to send a twitter update to the given account
-     - nothing else.  The message to send is read from STDIN; the useraccount
+     - nothing else.  The message to send is read from STDIN; the user account
      to update needs to be configured in the file ~/.tweetrc.
 
 OPTIONS
@@ -73,8 +73,7 @@ OPTIONS
 
 DETAILS
      tweet requires you to specify the username of the twitter account to
-     which to post the update.	After that, it will read a single line of text
-     from STDIN.
+     which to post the update.	After that, it will read input from STDIN.
 
      If the configuration file ~/.tweetrc contains information for exactly one
      username, then tweet will update that user's status.  If the file does
@@ -82,7 +81,7 @@ DETAILS
      tweet will attempt to retrieve the access information for that account
      and ask the user to update the configuration file.
 
-     If the resulting message contains 140 or fewer characters, tweet will
+     If the resulting message contains 280 or fewer characters, tweet will
      post the message directly, otherwise, it will complain and exit (unless
      the -t flag is given).
 
@@ -100,9 +99,9 @@ TWITTER AUTHORIZATION
      anybody wishing to run this tool would have to get their own consumer
      secret and key.
 
-     Hence, if you wish to run this tool, please go to http://dev.twit-
-     ter.com/apps/new and register a new client.  Then store the key and
-     secret in the configuration file (see below).
+     Hence, if you wish to run this tool, please go to https://developer.twit-
+     ter.com/ and register a new client.  Then store the key and secret in the
+     configuration file (see below).
 
 CONFIGURATION FILE
      tweet looks for user access information in ~/.tweetrc.  It will ignore
