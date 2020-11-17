@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python2.7
 #
 # This little tool is a very simple command-line tweeter.  That is, it
 # allows you to send a twitter update to a given user account.  It doesn't
@@ -84,7 +84,7 @@ class Tweet(object):
 
         def __init__(self, rval):
             self.err = rval
-            self.msg = 'Usage: %s [-hit] [-[BF] user] [-[adlr] id]\n' % os.path.basename(sys.argv[0])
+            self.msg = 'Usage: %s [-hit] [-[BF] user] [-[adlr] id] [-m media]\n' % os.path.basename(sys.argv[0])
             self.msg += '  [-[bf] user] -u user\n'
             self.msg += '\t-B user  unblock this user\n'
             self.msg += '\t-F user  unfollow this user\n'
@@ -95,6 +95,7 @@ class Tweet(object):
             self.msg += '\t-h       print this message and exit\n'
             self.msg += '\t-i       print the tweet ID of any new tweets\n'
             self.msg += '\t-l id    like given message\n'
+            self.msg += '\t-m media attach media to the tweet\n'
             self.msg += '\t-r id    retweet given message\n'
             self.msg += '\t-t       truncate messages\n'
             self.msg += '\t-u user  tweet as this user\n'
