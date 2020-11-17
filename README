@@ -50,7 +50,7 @@ OPTIONS
      -c file   Read the configuration from the given file.
 
      -d id     Delete the given message.  Can be given multiple times to
-	       retweet multiple messages.
+	       delete multiple messages.
 
      -h	       Print a short usage statement and exit.
 
