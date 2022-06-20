@@ -1,4 +1,4 @@
-.Dd November 17, 2020
+.Dd June 20, 2022
 .Dt TWEET 1
 .Os
 .Sh NAME
@@ -9,6 +9,7 @@
 .Op Fl hit
 .Op Fl B Ar user
 .Op Fl F Ar user
+.Op Fl R Ar id
 .Op Fl a Ar id
 .Op Fl b Ar user
 .Op Fl c Ar file
@@ -36,6 +37,10 @@ Can be given multiple times to unblock multiple users.
 Unfollow the given
 .Ar user .
 Can be given multiple times to unfollow multiple users.
+.It Fl R Ar id
+Un-retweet the tweet with the given
+.Ar id .
+Can be given multiple times to un-retweet multiple messages.
 .It Fl a Ar id
 Answer (ie reply) to the given
 .Ar id .
@@ -139,4 +144,5 @@ was originally written by
 .Aq jschauma@netmeister.org
 in January 2011.
 .Sh BUGS
-Please report bugs and feature requests to the author.
+Please file bugs and feature requests via GitHub pull
+requests and issues or by emailing the author.

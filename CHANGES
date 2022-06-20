@@ -1,3 +1,7 @@
+Version 1.5 (2022-06-20)
+ * move to python 3.x
+ * add '-R' to un-retweet
+
 Version 1.4 (2017-11-28)
  * use 280 chars
  * allow multi-line input

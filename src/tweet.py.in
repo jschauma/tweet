@@ -1,4 +1,4 @@
-#! /usr/bin/env python3.8
+#! /usr/bin/env <PYTHON>
 #
 # This little tool is a very simple command-line tweeter.  That is, it
 # allows you to send a twitter update to a given user account.  It doesn't
